@@ -1,0 +1,32 @@
+(i) Create an user for using database.
+	Username should be: zahid
+	Password should be: zhm8951
+
+(ii) Create a database named as "library".
+
+(iii) Create 5 tables in the database named as,
+	
+	members : Will store the data of regular members.
+		Columns : id, first_name, last_name, email.
+	
+	librarians : Will store the data of librarians.
+		Columns : id, first_name, last_name, email, username.
+	
+	admins : Will store the data of admins.
+		Columns : id, first_name, last_name, email, username.
+	
+	users : Will store the data of librarians and admins (Who are responsible for CRUD operations).
+		Columns : username (Fetch username from librarians and admins table), password (Provide a default password for all 					entries), enabled (Provide a default value of 1 which means autheticate user).
+	
+	roles : Will store the roles of users from users table (Fetched from librarians and admins table).
+		Columns : username (same as the "username" from "users" table), role (assigned based on whether fetched from librarians 				table or admins table). 
+
+(iv) Start a spring project and connect it to the "library" database.
+
+(v) The project will have the following abilities of GET, POST, PUT and DELETE,
+	
+	Admin : Has the ability to read, add, update and delete admins, librarians and members.
+	
+	Librarian : Has the ability to read, add, update and delete members.
+	
+	Members: Has no ability.

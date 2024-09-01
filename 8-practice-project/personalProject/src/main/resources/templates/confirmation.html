@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Confirmation</title>
+</head>
+<body>
+
+    <h3>Student registered successfully...</h3>
+    <p th:text="'Student ID : ' + ${theStudent.id}">
+    <p th:text="'Name : ' + ${theStudent.firstName} + ' ' + ${theStudent.lastName}"/>
+    <p th:text="'Email : ' + ${theStudent.email}"/>
+    <p th:text="'Nationality : ' + ${theStudent.nationality}"/>
+    <p>Major :</p>
+    <ul>
+        <li th:each="x : ${theStudent.major}" th:text="${x}"/>
+    </ul>
+    <p th:text="'Semester : ' + ${theStudent.semester}"/>
+    <p th:text="'Section : ' + ${theStudent.section}"/>
+
+</body>
+</html>

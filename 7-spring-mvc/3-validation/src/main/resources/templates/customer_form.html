@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Customer Registration</title>
+
+    <!-- add reference to the css file -->
+    <link rel="stylesheet" th:href="@{/css/styles.css}" />
+
+</head>
+<body>
+
+    <h1>Fill out the form for registration...</h1>
+
+    <br><br>
+
+    <form th:action="@{/confirmation}" method="POST">
+
+        First Name : <input type="text" th:field="${customer.firstName}" placeholder="Enter your first name" />
+
+        <br><br>
+
+        Last Name : <input type="text" th:field="${customer.lastName}" placeholder="Enter your last name" />
+
+        <!-- add the error message (if present) -->
+        <span th:if="${#fields.hasErrors('customer.lastName')}"
+              th:errors="${customer.lastName}"
+              class="error"></span>
+
+        <br><br>
+
+        Rating : <input type="number" th:field="${customer.providedRating}"/>
+
+        <!-- add the error message (if present) -->
+        <span th:if="${#fields.hasErrors('customer.providedRating')}"
+              th:errors="${customer.providedRating}"
+              class="error"></span>
+
+        <br><br>
+
+        Postal Code : <input type="text" th:field="${customer.postalCode}" />
+
+        <!-- add the error message (if present) -->
+        <span th:if="${#fields.hasErrors('customer.postalCode')}"
+              th:errors="${customer.postalCode}"
+              class="error"></span>
+
+        <br><br>
+
+        Course Code : <input type="text" th:field="${customer.courseCode}" />
+
+        <!-- add the error message (if present) -->
+        <span th:if="${#fields.hasErrors('customer.courseCode')}"
+              th:errors="${customer.courseCode}"
+              class="error"></span>
+
+        <br><br>
+
+        <input type="submit" value="Submit">
+
+    </form>
+
+</body>
+</html>

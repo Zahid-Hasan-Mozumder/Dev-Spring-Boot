@@ -1,0 +1,211 @@
+Spring Boot Security step by step:
+
+(i) By updating the maven pom.xml file,
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-security</artifactId>
+		</dependency>
+
+(ii) By updating the application.properties file,
+
+		spring.security.user.name = zahid
+		spring.security.user.password = zhm8951
+
+(iii) By creating the @Configuration annotated class,
+
+		@Configuration
+		public class SecurityConfig {
+
+    			@Bean
+    			public InMemoryUserDetailsManager userDetailsManager(){
+
+        			UserDetails john = User.builder()
+                			.username("john")
+                			.password("{noop}test123")
+                			.roles("EMPLOYEE")
+                			.build();
+
+        			UserDetails mary = User.builder()
+                			.username("mary")
+                			.password("{noop}test123")
+                			.roles("EMPLOYEE", "MANAGER")
+                			.build();
+
+        			UserDetails susan = User.builder()
+                			.username("susan")
+                			.password("{noop}test123")
+                			.roles("EMPLOYEE", "MANAGER", "ADMIN")
+                			.build();
+
+        			return new InMemoryUserDetailsManager(john, mary, susan);
+    			}
+		}
+
+
+(iv) Specify authorized url for specific roles
+
+		@Configuration
+		public class SecurityConfig {
+		
+			//.................................................................................................
+
+
+        		@Bean
+    			public SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
+
+        			http.authorizeHttpRequests(configurer ->
+            				configurer
+                    				.requestMatchers(HttpMethod.GET, "api/employees").hasRole("EMPLOYEE")
+                    				.requestMatchers(HttpMethod.GET, "api/employees/**").hasRole("EMPLOYEE")
+                    				.requestMatchers(HttpMethod.POST, "api/employees").hasRole("MANAGER")
+                    				.requestMatchers(HttpMethod.PUT, "api/employees").hasRole("MANAGER")
+                    				.requestMatchers(HttpMethod.DELETE, "api/employees/**").hasRole("ADMIN")
+        			);
+
+        			// use HTTP Basic authentication
+        			http.httpBasic(Customizer.withDefaults());
+
+        			// disable CSRF
+        			http.csrf(csrf -> csrf.disable());
+
+        			return http.build();
+    			}
+		}
+
+(v) Fetch users from database by using default schema technology from "users" and "authorities" table,
+
+	SQL script for "users" and "authorities" table:
+
+		USE `employee_directory`;
+
+		DROP TABLE IF EXISTS `authorities`;
+		DROP TABLE IF EXISTS `users`;
+
+		--
+		-- Table structure for table `users`
+		--
+
+		CREATE TABLE `users` (
+  		`username` varchar(50) NOT NULL,
+  		`password` varchar(50) NOT NULL,
+  		`enabled` tinyint NOT NULL,
+  		PRIMARY KEY (`username`)
+		) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+		--
+		-- Inserting data for table `users`
+		--
+
+		INSERT INTO `users` 
+		VALUES 
+		('john','{noop}test123',1),
+		('mary','{noop}test123',1),
+		('susan','{noop}test123',1);
+
+
+		--
+		-- Table structure for table `authorities`
+		--
+
+		CREATE TABLE `authorities` (
+  		`username` varchar(50) NOT NULL,
+  		`authority` varchar(50) NOT NULL,
+  		UNIQUE KEY `authorities_idx_1` (`username`,`authority`),
+  		CONSTRAINT `authorities_ibfk_1` FOREIGN KEY (`username`) REFERENCES `users` (`username`)
+		) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+		--
+		-- Inserting data for table `authorities`
+		--
+
+		INSERT INTO `authorities` 
+		VALUES 
+		('john','ROLE_EMPLOYEE'),
+		('mary','ROLE_EMPLOYEE'),
+		('mary','ROLE_MANAGER'),
+		('susan','ROLE_EMPLOYEE'),
+		('susan','ROLE_MANAGER'),
+		('susan','ROLE_ADMIN');
+
+
+	Updating Spring code for @Configuration annotation to fetch users from database,
+
+		@Configuration
+		public class SecurityConfig {
+
+    			@Bean
+    			public UserDetailsManager userDetailsManager(DataSource dataSource){
+        			return new JdbcUserDetailsManager(dataSource);
+    			}
+
+    			//-------------------------------------------------------------------
+		}
+
+(vi) Use Bcrypt technique for password encryption:
+	
+	Use website to encrypt desired password to Bcrypt format:
+	
+		https://www.bcryptcalculator.com/
+	
+	Create SQL script with encrypted password:
+
+		INSERT INTO `users` 
+		VALUES 
+		('john','{bcrypt}$2a$10$M6Xqqcfai.RTuvqYglCt/e3bwf4IuxYOXEnm/WTqbBZXd6gyHZH1y',1),
+		('mary','{bcrypt}$2a$10$M6Xqqcfai.RTuvqYglCt/e3bwf4IuxYOXEnm/WTqbBZXd6gyHZH1y',1),
+		('susan','{bcrypt}$2a$10$M6Xqqcfai.RTuvqYglCt/e3bwf4IuxYOXEnm/WTqbBZXd6gyHZH1y',1);
+
+
+------------------------------------------------------------------------------------------------------------------------------------------
+	Q: 	Hi, I didn't fully understood how Spring checks the bcrypt password.
+
+		You said that password is stored in users table in the form {bcrypt}HASH and you also said that the HASH value is 			calculated throught the bcrypt algorithm applied to (password+salt) and salt is randomly generated at every crypt run.
+
+		Now, in db I stored the hashed value, so Spring takes the password in plaintext from the login form, but how can add the 		exact same salt value?? Where and how does it get it??? Spring doesn't kown the salt that was applied to the password to 		generate the HASH, so how does Spring get the exact salt to be applied to the plain text password to generate that exact 		HASH? In db there is only the HASH value not the related salt....how Spring can extract the salt from that HASH??
+
+	A:	When you create a bcrypt hash of a password, it produces a string that includes:
+
+		1. The version of the bcrypt algorithm.
+
+		2. The cost factor (work factor).
+
+		3. The salt.
+
+		4. The actual hashed password.
+
+
+
+		These components are combined into a single string. Here's how it looks:
+
+		$2a$10$eImiTXuWVxfM37uY4JANjQ==VNH8G2/lBwn5IR.5ObFiEtDEl.sWqoKWzyvW
+
+		In this example:
+
+		$2a$ is the bcrypt version.
+
+		10 is the cost factor.
+
+		eImiTXuWVxfM37uY4JANjQ== is the salt.
+
+		VNH8G2/lBwn5IR.5ObFiEtDEl.sWqoKWzyvW is the hashed password.
+------------------------------------------------------------------------------------------------------------------------------------------
+
+(vii) Create custom table and show similarity of them with default "users" and "authorities" table,
+
+		@Configuration
+		public class SecurityConfig {
+
+    		@Bean
+    		public UserDetailsManager userDetailsManager(DataSource dataSource){
+        		JdbcUserDetailsManager theUserDetails = new JdbcUserDetailsManager(dataSource);
+
+        		theUserDetails.setUsersByUsernameQuery("select user_id, pw, active from members where user_id=?");
+
+        		theUserDetails.setAuthoritiesByUsernameQuery("select user_id, role from roles where user_id=?");
+
+        		return theUserDetails;
+    		}
+
+
+}

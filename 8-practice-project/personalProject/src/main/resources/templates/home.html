@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Home</title>
+
+    <!-- add refernece to the css file -->
+    <link rel="stylesheet" th:href="@{/css/style.css}"/>
+
+</head>
+<body>
+
+    <form th:action="@{/registration}" method="POST">
+
+        <input type="submit" value="Register" class="btn">
+
+    </form>
+
+</body>
+</html>

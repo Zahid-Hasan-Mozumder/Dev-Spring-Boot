@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Result</title>
+</head>
+<body>
+    <h1>Hello to the Spring App!</h1>
+    <p>Student Entered Successfully...</p>
+    <p th:text="'Name : ' + ${theStudent.firstName} + ' ' + ${theStudent.lastName}"/>
+    <p th:text="'From : ' + ${theStudent.country}" />
+    <p th:text="'Favourite Programming Language : ' + ${theStudent.favouriteLanguage}" />
+    <!-- <p th:text="'Favourite Operating System : ' + ${theStudent.favouriteOS}" /> -->
+    <p>Favourite Operating Systems : </p>
+    <ul>
+        <li th:each="currOS : ${theStudent.favouriteOS}" th:text="${currOS}" />
+    </ul>
+</body>
+</html>

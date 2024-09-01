@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Registration Form</title>
+
+    <!-- add reference to the css files -->
+    <link rel="stylesheet" th:href="@{/css/style.css}" />
+
+</head>
+<body>
+
+    <h1>Fill out the registration form...</h1>
+
+    <form th:action="@{/confirmation}" method="POST">
+
+        Student ID <span class="asterisk"><sup>*</sup></span> : <input type="text" th:field="${theStudent.id}" placeholder="Enter your student id">
+        <span th:if="${#fields.hasErrors('theStudent.id')}" th:errors="${theStudent.id}" class="error"></span>
+        <br><br>
+
+        First Name : <input type="text" th:field="${theStudent.firstName}" placeholder="Enter your first Name">
+        <br><br>
+
+        Last Name <span class="asterisk"><sup>*</sup></span> : <input type="text" th:field="${theStudent.lastName}" placeholder="Enter your first Name">
+        <span th:if="${#fields.hasErrors('theStudent.lastName')}" th:errors="${theStudent.lastName}" class="error"></span>
+        <br><br>
+
+        Email <span class="asterisk"><sup>*</sup></span> : <input type="email" th:field="${theStudent.email}" placeholder="Enter your email address">
+        <span th:if="${#fields.hasErrors('theStudent.email')}" th:errors="${theStudent.email}" class="error"></span>
+        <br><br>
+
+        Nationality :
+        <select th:field="${theStudent.nationality}">
+            <option th:each="x : ${nationalities}" th:value="${x}" th:text="${x}" />
+        </select>
+        <br><br>
+
+        Major : <input type="checkbox" th:each="x : ${subjects}" th:field="${theStudent.major}" th:value="${x}" th:text="${x}" />
+        <br><br>
+
+        Semester : <input type="radio" th:each="x : ${semesters}" th:field="${theStudent.semester}" th:value="${x}" th:text="${x}" />
+        <br><br>
+
+        Section : <input type="text" th:field="${theStudent.section}">
+        <span th:if="${#fields.hasErrors('theStudent.section')}" th:errors="${theStudent.section}" class="error"></span>
+        <br><br>
+
+        <input type="submit" value="Submit" class="btn">
+
+    </form>
+</body>
+</html>

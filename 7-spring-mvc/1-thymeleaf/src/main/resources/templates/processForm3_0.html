@@ -1,0 +1,19 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Output Form 3.0</title>
+
+    <!-- reference to css -->
+    <link rel="stylesheet" th:href="@{/css/style.css}" />
+
+</head>
+<body>
+    <h1 class="funny">Hello to the Spring App!</h1>
+    <p th:text="'I hope you will enjoy the journey with us, ' + ${param.studentName}" class="funny"/>
+    <p th:text = "${message}" class="funny"/>
+</body>
+</html>
